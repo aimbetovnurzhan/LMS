@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class Application {
@@ -15,16 +16,18 @@ public class Application {
     }
 
     @Bean
-    public CommandLineRunner demo(UserRepository repository) {
+    public CommandLineRunner demo(UserRepository repository, PasswordEncoder encoder) {
         return (args) -> {
+            String rawPassword = "adminPassword";
+            String encodedPassword = encoder.encode(rawPassword);
             // Создаем и сохраняем тестового пользователя
             User testUser = User.builder()
                     .username("admin")
-                    .passwordHash("hashed_password_123")
+                    .passwordHash(encodedPassword)
                     .build();
 
             repository.save(testUser);
-            System.out.println(">>> Тестовый пользователь сохранен в БД!");
+            System.out.println(">>> Password encoded: " + encodedPassword);
         };
     }
 }
