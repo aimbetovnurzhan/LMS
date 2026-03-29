@@ -7,11 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service // Говорим Spring: "Это сервисный слой, создай этот объект при старте"
-@RequiredArgsConstructor // Автоматически создает конструктор для внедрения зависимостей
+@Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    // Эти инструменты Spring "подложит" нам сам через конструктор
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -22,16 +21,20 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Error: User with the same name already exists!");
         }
 
-        // 2. ШИФРОВАНИЕ: Берем "сырой" пароль и превращаем в хеш
         String encodedPassword = passwordEncoder.encode(registrationDto.getPassword());
 
-        // 3. ПРЕОБРАЗОВАНИЕ: Из "конверта" (DTO) в "сущность" (Entity)
         User newUser = User.builder()
                 .username(registrationDto.getUsername())
                 .passwordHash(encodedPassword)
                 .build();
 
-        // 4. СОХРАНЕНИЕ: Отправляем готовую сущность в базу
         return userRepository.save(newUser);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        // Ищем в базе через репозиторий.
+        // Если не нашли — возвращаем null, чтобы контроллер понял: юзера нет.
+        return userRepository.findByUsername(username).orElse(null);
     }
 }

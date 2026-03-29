@@ -5,4 +5,5 @@ import com.lms.entity.User;
 
 public interface UserService {
     User registerUser(UserRegistrationDto registrationDto);
+    User findByUsername(String username);
 }
