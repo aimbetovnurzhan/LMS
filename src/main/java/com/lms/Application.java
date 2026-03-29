@@ -1,7 +1,9 @@
 package com.lms;
 
+import com.lms.dto.UserRegistrationDto;
 import com.lms.entity.User;
 import com.lms.repository.UserRepository;
+import com.lms.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,18 +18,15 @@ public class Application {
     }
 
     @Bean
-    public CommandLineRunner demo(UserRepository repository, PasswordEncoder encoder) {
+    public CommandLineRunner demo(UserService userService) {
         return (args) -> {
-            String rawPassword = "adminPassword";
-            String encodedPassword = encoder.encode(rawPassword);
-            // Создаем и сохраняем тестового пользователя
-            User testUser = User.builder()
-                    .username("admin")
-                    .passwordHash(encodedPassword)
-                    .build();
+            UserRegistrationDto dto = new UserRegistrationDto();
+            dto.setUsername("student_java");
+            dto.setPassword("secret123");
 
-            repository.save(testUser);
-            System.out.println(">>> Password encoded: " + encodedPassword);
+            userService.registerUser(dto);
+            //userService.registerUser(dto);
+            System.out.println(">>> User registered succesfully through the service!");
         };
     }
 }
